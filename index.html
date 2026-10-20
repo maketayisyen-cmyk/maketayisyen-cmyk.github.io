@@ -165,9 +165,16 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   <div class="slots" id="slots"></div>
 
   <div class="sec">
+    <div><h2>Pòs ki pare nan Google Drive</h2><div class="en">Ready in Google Drive — pick one and publish it</div></div>
+    <button class="btn line sm" type="button" id="driveSyncBtn">↻ Rafrechi Drive · Refresh Drive</button>
+  </div>
+  <div class="hint" id="driveHint" style="margin:-6px 0 14px">Mete imaj la nan katab Google Drive la, ak yon liy nan Sheet la (file, caption). · Put the image in the Drive folder and add a row to the Sheet (file, caption).</div>
+  <div class="drafts" id="driveQueue"></div>
+
+  <div class="sec" hidden>
     <div><h2>Kreye yon pòs ak AI</h2><div class="en">OpenAI writes the caption (Creole + English) and makes the image</div></div>
   </div>
-  <div class="grid2">
+  <div class="grid2" hidden>
     <form class="card pad" id="createForm">
       <label class="f" for="topic">Sou kisa pòs la ye? · What is the post about? <span style="font-weight:500;color:var(--muted)">(oswa sijè 1–90 · or topic 1–90 · vid = pwochen sijè · blank = next topic)</span></label>
       <textarea class="input" id="topic" placeholder="Egz: 33 — oswa: Nouvo kafe ayisyen, 20% rabè wikenn sa a…"></textarea>
@@ -203,8 +210,8 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
     </div>
   </div>
 
-  <div class="sec"><div><h2>Bouyon pou apwouve</h2><div class="en">Drafts waiting for your approval</div></div></div>
-  <div class="drafts" id="drafts"></div>
+  <div class="sec" hidden><div><h2>Bouyon pou apwouve</h2><div class="en">Drafts waiting for your approval</div></div></div>
+  <div class="drafts" id="drafts" hidden></div>
 
   <div class="sec"><div><h2>Pwochen pòs yo</h2><div class="en">Approved and scheduled</div></div></div>
   <div class="card"><ul class="list" id="upcoming"></ul></div>
@@ -258,7 +265,7 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
 
   let token = "";
   try { token = localStorage.getItem(KEY) || ""; } catch (_) {}
-  let posts = [], published = {}, autoOn = null;
+  let posts = [], published = {}, autoOn = null, driveItems = [], driveSynced = "";
   const imageCache = {};
 
   function toast(msg, err) {
@@ -312,8 +319,9 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
     renderConn();
     if (token) {
       try {
-        const [p, s] = await Promise.all([readJson("content/posts.json"), readJson("content/published-state.json").catch(() => ({json: {published: {}}}))]);
+        const [p, s, d] = await Promise.all([readJson("content/posts.json"), readJson("content/published-state.json").catch(() => ({json: {published: {}}})), readJson("content/drive-queue.json").catch(() => ({json: {items: []}}))]);
         posts = p.json.posts || []; published = (s.json && s.json.published) || {};
+        driveItems = d.json.items || []; driveSynced = d.json.synced_at || "";
         $("#connText").textContent = OWNER;
       } catch (e) {
         toast(e.status === 401 ? "Token an pa bon. Konekte ankò. · Token invalid, reconnect." : "Pa ka li pòs yo · Could not load posts: " + e.message, true);
@@ -322,7 +330,35 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
     renderAll();
     if (token) { loadRuns(); loadAuto(); loadModels(); } else renderRuns([]);
   }
-  function renderAll() { renderSlots(); renderDrafts(); renderUpcoming(); }
+  function renderAll() { renderSlots(); renderDrafts(); renderUpcoming(); renderDrive(); }
+  function renderDrive() {
+    const box = $("#driveQueue"); box.textContent = "";
+    if (driveSynced) $("#driveHint").textContent = "Dènye mizajou · Last refreshed: " + ago(driveSynced) + " · Mete imaj la nan katab Drive la ak yon liy nan Sheet la (file, caption). · Image in the Drive folder + a row in the Sheet (file, caption).";
+    if (!driveItems.length) { box.appendChild(el("div", "card pad empty", token ? "Pa gen pòs nan Drive. Ajoute yon imaj, epi peze Rafrechi Drive. · Nothing in Drive yet — add an image, then press Refresh Drive." : "Konekte GitHub pou wè pòs yo. · Connect GitHub to see posts.")); return; }
+    driveItems.forEach(item => {
+      const p = {id: "drive-" + item.id, platforms: item.platforms || []};
+      const card = el("article", "card draft");
+      const thumb = el("div", "thumb", "…");
+      const body = el("div", "body");
+      body.append(el("div", "caption", item.caption || "⚠ Pa gen tèks pou " + item.name + " nan Sheet la. · No caption in the Sheet."), chips(p));
+      const btn = el("button", "btn red block mt", "▶ Pibliye kounye a · Publish now"); btn.type = "button";
+      btn.disabled = !item.caption;
+      btn.onclick = () => publishDrive(item, btn);
+      body.appendChild(btn);
+      card.append(thumb, body); box.appendChild(card);
+      imageFor(item.thumb, thumb);
+    });
+  }
+  async function publishDrive(item, btn) {
+    if (!token) return openConnect();
+    if (!confirm("Pibliye " + item.name + " sou " + (item.platforms || []).join(", ") + " kounye a? · Publish now?")) return;
+    btn.disabled = true; btn.textContent = "Ap pibliye… · Publishing…";
+    try {
+      await dispatch("publish.yml", {dry_run: autoOn === false ? "true" : "false", drive_file_id: item.id});
+      toast(autoOn === false ? "Piblikasyon fèmen: se yon tès sèlman. · Publishing is off: preview only." : "Li pral parèt nan 1–2 minit! · Live in 1–2 minutes.");
+      setTimeout(loadRuns, 4000); setTimeout(load, 120000);
+    } catch (e) { toast("Pa mache · Failed: " + e.message, true); btn.disabled = false; btn.textContent = "▶ Pibliye kounye a · Publish now"; }
+  }
   async function loadRuns() {
     try { renderRuns((await (await gh("/actions/runs?per_page=8")).json()).workflow_runs || []); } catch (_) { renderRuns([]); }
   }
@@ -495,6 +531,11 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
     }
   });
   $("#refreshBtn").onclick = () => { load(); toast("Rafrechi · Refreshed"); };
+  $("#driveSyncBtn").onclick = async () => {
+    if (!token) return openConnect();
+    try { await dispatch("drive-sync.yml", {}); toast("Ap li Google Drive… lis la ap mete ajou nan ~1 minit. · Reading Drive, list updates in ~1 min."); setTimeout(loadRuns, 4000); setTimeout(load, 70000); }
+    catch (e) { toast("Pa mache · Failed: " + e.message, true); }
+  };
 
   const pick = $("#platPick");
   PLATFORMS.forEach(p => { const l = el("label", "plat"), i = el("input"); i.type = "checkbox"; i.value = p; i.checked = ["facebook", "threads", "instagram"].includes(p); l.append(i, document.createTextNode(p)); pick.appendChild(l); });
