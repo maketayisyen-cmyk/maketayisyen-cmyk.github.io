@@ -497,7 +497,7 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   $("#refreshBtn").onclick = () => { load(); toast("Rafrechi · Refreshed"); };
 
   const pick = $("#platPick");
-  PLATFORMS.forEach(p => { const l = el("label", "plat"), i = el("input"); i.type = "checkbox"; i.value = p; i.checked = p !== "instagram"; l.append(i, document.createTextNode(p)); pick.appendChild(l); });
+  PLATFORMS.forEach(p => { const l = el("label", "plat"), i = el("input"); i.type = "checkbox"; i.value = p; i.checked = p === "facebook" || p === "threads"; l.append(i, document.createTextNode(p)); pick.appendChild(l); });
   SOON.forEach(p => pick.appendChild(el("span", "plat soon", p + " · byento")));
   SLOTS.forEach(s => { const o = el("option", null, s.time); o.value = s.hour; $("#cSlot").appendChild(o); });
   $("#cDate").value = laDate(new Date());
