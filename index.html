@@ -182,7 +182,7 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
       <div class="mt">
         <label class="f">Rezo sosyal · Platforms</label>
         <div class="plats" id="platPick"></div>
-        <div class="hint">Instagram bezwen yon lyen imaj piblik (image_url) anvan li pibliye; san li, Threads poste tèks sèlman. · Instagram needs a public image link; without it, Threads posts text only.</div>
+        <div class="hint">Instagram ak Threads itilize foto Facebook la otomatikman, kidonk kite Facebook koche. · Instagram and Threads reuse the Facebook photo automatically, so keep Facebook checked.</div>
       </div>
       <div class="row mt">
         <div><label class="f" for="cDate">Dat · Date</label><input class="input" type="date" id="cDate"></div>
@@ -497,7 +497,7 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   $("#refreshBtn").onclick = () => { load(); toast("Rafrechi · Refreshed"); };
 
   const pick = $("#platPick");
-  PLATFORMS.forEach(p => { const l = el("label", "plat"), i = el("input"); i.type = "checkbox"; i.value = p; i.checked = p === "facebook" || p === "threads"; l.append(i, document.createTextNode(p)); pick.appendChild(l); });
+  PLATFORMS.forEach(p => { const l = el("label", "plat"), i = el("input"); i.type = "checkbox"; i.value = p; i.checked = ["facebook", "threads", "instagram"].includes(p); l.append(i, document.createTextNode(p)); pick.appendChild(l); });
   SOON.forEach(p => pick.appendChild(el("span", "plat soon", p + " · byento")));
   SLOTS.forEach(s => { const o = el("option", null, s.time); o.value = s.hour; $("#cSlot").appendChild(o); });
   $("#cDate").value = laDate(new Date());
