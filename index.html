@@ -169,8 +169,12 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   </div>
   <div class="grid2">
     <form class="card pad" id="createForm">
-      <label class="f" for="topic">Sou kisa pòs la ye? · What is the post about?</label>
-      <textarea class="input" id="topic" required placeholder="Egz: Nouvo kafe ayisyen, 20% rabè wikenn sa a…"></textarea>
+      <label class="f" for="topic">Sou kisa pòs la ye? · What is the post about? <span style="font-weight:500;color:var(--muted)">(oswa sijè 1–90 · or topic 1–90 · vid = pwochen sijè · blank = next topic)</span></label>
+      <textarea class="input" id="topic" placeholder="Egz: 33 — oswa: Nouvo kafe ayisyen, 20% rabè wikenn sa a…"></textarea>
+      <div class="mt">
+        <label class="f" for="cModel">Modèl · Model</label>
+        <select class="input" id="cModel"><option value="auto">Otomatik (chak modèl a tou pa l) · Rotate</option><option value="none">San modèl · No model</option></select>
+      </div>
       <div class="mt">
         <label class="f" for="imgPrompt">Imaj · Image description <span style="font-weight:500;color:var(--muted)">(opsyonèl · optional)</span></label>
         <input class="input" id="imgPrompt" placeholder="Egz: High-end ad photo, woman holding Haitian coffee, studio light, no text">
@@ -195,7 +199,7 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
         <li><span class="n">3</span><span><b>Otomatik · Auto</b> — GitHub pibliye l nan lè a sou tout rezo ou chwazi yo.</span></li>
         <li><span class="n">4</span><span><b>Si li pa pati · If missed</b> — peze <b>Pibliye kounye a</b> sou kat pòs la.</span></li>
       </ol>
-      <div class="hint mt">Nouvo rezo (Facebook, Threads, TikTok, LinkedIn, X, YouTube) ap ajoute lè kont yo konekte. · More networks get added as accounts are connected.</div>
+      <div class="hint mt">Nouvo rezo (TikTok, LinkedIn, X, YouTube) ap ajoute lè kont yo konekte. · More networks get added as accounts are connected.</div>
     </div>
   </div>
 
@@ -316,11 +320,21 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
       }
     }
     renderAll();
-    if (token) { loadRuns(); loadAuto(); } else renderRuns([]);
+    if (token) { loadRuns(); loadAuto(); loadModels(); } else renderRuns([]);
   }
   function renderAll() { renderSlots(); renderDrafts(); renderUpcoming(); }
   async function loadRuns() {
     try { renderRuns((await (await gh("/actions/runs?per_page=8")).json()).workflow_runs || []); } catch (_) { renderRuns([]); }
+  }
+  async function loadModels() {
+    try {
+      const files = await (await gh("/contents/content/models")).json();
+      const names = [...new Set(files.filter(f => /\.(jpe?g|png|webp)$/i.test(f.name))
+        .map(f => f.name.replace(/\.[^.]+$/, "").replace(/-\d+$/, "").toLowerCase()))].sort();
+      const sel = $("#cModel");
+      sel.querySelectorAll("option[data-model]").forEach(o => o.remove());
+      names.forEach(n => { const o = el("option", null, n); o.value = n; o.dataset.model = "1"; sel.appendChild(o); });
+    } catch (_) {}
   }
   async function loadAuto() {
     try { setAuto(String((await (await gh("/actions/variables/ENABLE_PUBLISHING")).json()).value).toLowerCase() === "true"); }
@@ -451,7 +465,8 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
     if (!token) return openConnect();
     const plats = [...document.querySelectorAll("#platPick input:checked")].map(i => i.value);
     if (!plats.length) return toast("Chwazi omwen yon rezo · Pick a platform", true);
-    const inputs = {topic: $("#topic").value.trim(), platforms: plats.join(","), generate_image: "true"};
+    const inputs = {platforms: plats.join(","), generate_image: "true", model: $("#cModel").value};
+    if ($("#topic").value.trim()) inputs.topic = $("#topic").value.trim();
     if ($("#imgPrompt").value.trim()) inputs.image_prompt = $("#imgPrompt").value.trim();
     if ($("#cDate").value && $("#cSlot").value) inputs.publish_at = laIso($("#cDate").value, Number($("#cSlot").value));
     const btn = $("#createBtn"); btn.disabled = true; btn.textContent = "Ap kreye… · Generating…";
