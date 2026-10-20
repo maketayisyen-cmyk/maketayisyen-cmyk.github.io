@@ -159,17 +159,17 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   </div>
 
   <div class="sec">
+    <div><h2>Pare pou pibliye</h2><div class="en">Ready to Publish — the next 3 posts from Google Drive</div></div>
+    <button class="btn line sm" type="button" id="driveSyncBtn">↻ Rafrechi Drive · Refresh Drive</button>
+  </div>
+  <div class="hint" id="driveHint" style="margin:-6px 0 14px">Mete imaj la nan katab <b>Ready to Publish</b> nan Google Drive, ak yon liy nan Sheet la (file, caption). · Put the image in the <b>Ready to Publish</b> Drive folder and add a row to the Sheet (file, caption).</div>
+  <div class="drafts" id="driveQueue"></div>
+
+  <div class="sec">
     <div><h2>Pòs jodi a</h2><div class="en" id="todayLabel">Today's schedule</div></div>
     <button class="btn line sm" type="button" id="refreshBtn">↻ Rafrechi · Refresh</button>
   </div>
   <div class="slots" id="slots"></div>
-
-  <div class="sec">
-    <div><h2>Pòs ki pare nan Google Drive</h2><div class="en">Ready in Google Drive — pick one and publish it</div></div>
-    <button class="btn line sm" type="button" id="driveSyncBtn">↻ Rafrechi Drive · Refresh Drive</button>
-  </div>
-  <div class="hint" id="driveHint" style="margin:-6px 0 14px">Mete imaj la nan katab Google Drive la, ak yon liy nan Sheet la (file, caption). · Put the image in the Drive folder and add a row to the Sheet (file, caption).</div>
-  <div class="drafts" id="driveQueue"></div>
 
   <div class="sec" hidden>
     <div><h2>Kreye yon pòs ak AI</h2><div class="en">OpenAI writes the caption (Creole + English) and makes the image</div></div>
@@ -266,6 +266,19 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   let token = "";
   try { token = localStorage.getItem(KEY) || ""; } catch (_) {}
   let posts = [], published = {}, autoOn = null, driveItems = [], driveSynced = "";
+  // Drive posts just sent to publish: hidden right away while GitHub moves them to "Published".
+  const DRIVE_SHOWN = 3, SENT_KEY = "maket-drive-sent", SENT_MINUTES = 15;
+  function sentDrive() {
+    try {
+      const sent = JSON.parse(localStorage.getItem(SENT_KEY) || "{}"), now = Date.now();
+      Object.keys(sent).forEach(id => { if (now - sent[id] > SENT_MINUTES * 60000) delete sent[id]; });
+      return sent;
+    } catch (_) { return {}; }
+  }
+  function markSent(id) {
+    const sent = sentDrive(); sent[id] = Date.now();
+    try { localStorage.setItem(SENT_KEY, JSON.stringify(sent)); } catch (_) {}
+  }
   const imageCache = {};
 
   function toast(msg, err) {
@@ -333,9 +346,11 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   function renderAll() { renderSlots(); renderDrafts(); renderUpcoming(); renderDrive(); }
   function renderDrive() {
     const box = $("#driveQueue"); box.textContent = "";
-    if (driveSynced) $("#driveHint").textContent = "Dènye mizajou · Last refreshed: " + ago(driveSynced) + " · Mete imaj la nan katab Drive la ak yon liy nan Sheet la (file, caption). · Image in the Drive folder + a row in the Sheet (file, caption).";
-    if (!driveItems.length) { box.appendChild(el("div", "card pad empty", token ? "Pa gen pòs nan Drive. Ajoute yon imaj, epi peze Rafrechi Drive. · Nothing in Drive yet — add an image, then press Refresh Drive." : "Konekte GitHub pou wè pòs yo. · Connect GitHub to see posts.")); return; }
-    driveItems.forEach(item => {
+    const sent = sentDrive(), ready = driveItems.filter(item => !sent[item.id]);
+    const more = ready.length > DRIVE_SHOWN ? " · " + (ready.length - DRIVE_SHOWN) + " lòt ap tann apre yo · " + (ready.length - DRIVE_SHOWN) + " more waiting" : "";
+    if (driveSynced) $("#driveHint").textContent = "Dènye mizajou · Last refreshed: " + ago(driveSynced) + more + " · Imaj nan katab Ready to Publish + yon liy nan Sheet la (file, caption). · Image in Ready to Publish + a row in the Sheet (file, caption).";
+    if (!ready.length) { box.appendChild(el("div", "card pad empty", token ? "Pa gen anyen nan Ready to Publish. Mete yon imaj ladan l, epi peze Rafrechi Drive. · Nothing in Ready to Publish — add an image, then press Refresh Drive." : "Konekte GitHub pou wè pòs yo. · Connect GitHub to see posts.")); return; }
+    ready.slice(0, DRIVE_SHOWN).forEach(item => {
       const p = {id: "drive-" + item.id, platforms: item.platforms || []};
       const card = el("article", "card draft");
       const thumb = el("div", "thumb", "…");
@@ -355,6 +370,7 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
     btn.disabled = true; btn.textContent = "Ap pibliye… · Publishing…";
     try {
       await dispatch("publish.yml", {dry_run: autoOn === false ? "true" : "false", drive_file_id: item.id});
+      if (autoOn !== false) { markSent(item.id); renderDrive(); }
       toast(autoOn === false ? "Piblikasyon fèmen: se yon tès sèlman. · Publishing is off: preview only." : "Li pral parèt nan 1–2 minit! · Live in 1–2 minutes.");
       setTimeout(loadRuns, 4000); setTimeout(load, 120000);
     } catch (e) { toast("Pa mache · Failed: " + e.message, true); btn.disabled = false; btn.textContent = "▶ Pibliye kounye a · Publish now"; }
