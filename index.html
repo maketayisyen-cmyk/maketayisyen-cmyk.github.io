@@ -11,76 +11,118 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --red:#e30613;--red-deep:#a5000c;--red-soft:rgba(227,6,19,.12);
-  --bg:#f4f4f6;--surface:#fff;--surface-2:#fafafb;--ink:#121214;--muted:#6b6d73;--line:#e7e7ea;
-  --ok:#0f9d58;--ok-soft:rgba(15,157,88,.12);--warn:#b7791f;--warn-soft:rgba(183,121,31,.13);
-  --shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06);--radius:20px;
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);
+  --red:#e30613;--red-deep:#a5000c;--red-soft:rgba(227,6,19,.1);
+  --bg:#f3f3f5;--surface:#fff;--surface-2:#f8f8fa;--ink:#111113;--ink-2:#2c2c31;--muted:#6b6d73;--line:#e6e6ea;
+  --ok:#0f8f50;--ok-soft:rgba(15,143,80,.12);--warn:#a8680f;--warn-soft:rgba(183,121,31,.13);
+  --thumb:linear-gradient(135deg,#efeff2,#e4e4e9);--notice-bg:#fff7ec;--notice-line:#f3e1c4;--notice-ink:#6d4c1c;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 10px 28px rgba(0,0,0,.06);--radius:18px;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --red-soft:rgba(255,59,70,.16);--red-deep:#ff6b74;
+  --bg:#0c0c0e;--surface:#17171a;--surface-2:#1e1e22;--ink:#f2f2f4;--ink-2:#d4d4d9;--muted:#9a9aa2;--line:#2a2a30;
+  --ok:#3ccf86;--ok-soft:rgba(60,207,134,.14);--warn:#e2a64a;--warn-soft:rgba(226,166,74,.14);
+  --thumb:linear-gradient(135deg,#1d1d21,#26262b);--notice-bg:#221a10;--notice-line:#3d2f1b;--notice-ink:#e9cf9f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --red-soft:rgba(255,59,70,.16);--red-deep:#ff6b74;
+  --bg:#0c0c0e;--surface:#17171a;--surface-2:#1e1e22;--ink:#f2f2f4;--ink-2:#d4d4d9;--muted:#9a9aa2;--line:#2a2a30;
+  --ok:#3ccf86;--ok-soft:rgba(60,207,134,.14);--warn:#e2a64a;--warn-soft:rgba(226,166,74,.14);
+  --thumb:linear-gradient(135deg,#1d1d21,#26262b);--notice-bg:#221a10;--notice-line:#3d2f1b;--notice-ink:#e9cf9f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.35);color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
 button,input,select,textarea{font:inherit;color:inherit}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
 header{background:#0d0d0f;color:#fff;position:sticky;top:0;z-index:20;border-bottom:3px solid var(--red)}
-.head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:16px;padding-bottom:16px}
-.brand{display:flex;align-items:center;gap:12px}
-.mark{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--red);display:grid;place-items:center;font-weight:900;font-size:19px;letter-spacing:-.04em}
+.head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:14px;padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.mark{width:40px;height:40px;border-radius:50%;background:#fff;color:#e30613;display:grid;place-items:center;font-weight:900;font-size:18px;letter-spacing:-.04em;flex:none}
 .brand b{display:block;font-size:15px;letter-spacing:.06em;font-weight:900;line-height:1.1}
 .brand small{display:block;font-size:10.5px;letter-spacing:.2em;color:#a9a9b0;font-weight:700;margin-top:3px}
 .conn{display:flex;align-items:center;gap:10px}
 .dot{width:8px;height:8px;border-radius:50%;background:#777;display:inline-block;flex:none}
 .dot.on{background:#2ecc71;box-shadow:0 0 0 4px rgba(46,204,113,.18)}
-.ghost{white-space:nowrap;background:transparent;border:1px solid #3a3a40;color:#fff;border-radius:999px;padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer}
+.ghost{white-space:nowrap;background:transparent;border:1px solid #3a3a40;color:#fff;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
 .ghost:hover{border-color:#777}
-.hero{margin:28px 0 22px;border-radius:28px;padding:44px 44px 36px;color:#fff;position:relative;overflow:hidden;
-  background:radial-gradient(900px 400px at 100% 0%,rgba(227,6,19,.55),transparent 60%),linear-gradient(135deg,#141416,#1f1f23 60%,#2a0b0e)}
-.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:linear-gradient(180deg,#000,transparent);mask-image:linear-gradient(180deg,#000,transparent);pointer-events:none}
-.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:800;color:#ff8a92;position:relative}
-.hero h1{font-size:clamp(30px,4.6vw,54px);line-height:1.04;letter-spacing:-.045em;margin:12px 0 10px;max-width:760px;font-weight:900;position:relative}
-.hero p{color:#d6d6db;max-width:640px;line-height:1.65;font-size:15px;margin:0;position:relative}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px;position:relative}
-.stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:18px 20px}
-.stat .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b9b9c0;font-weight:700}
-.stat .v{font-size:28px;font-weight:900;letter-spacing:-.03em;margin-top:6px;display:flex;align-items:center;gap:10px}
-.stat .s{font-size:12px;color:#a9a9b0;margin-top:2px}
+.status{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow)}
+.stat .ic{width:40px;height:40px;border-radius:12px;background:var(--red-soft);color:var(--red);display:grid;place-items:center;flex:none;font-size:17px;font-weight:900}
+.stat .k{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.stat .v{font-size:20px;font-weight:900;letter-spacing:-.02em;margin-top:2px;display:flex;align-items:center;gap:8px}
+.stat .s{font-size:12px;color:var(--muted);margin-top:1px;line-height:1.4}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:transform .12s,background .15s,opacity .15s;white-space:nowrap}
 .btn:hover{transform:translateY(-1px)}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn.red{background:var(--red);color:#fff;box-shadow:0 8px 20px rgba(227,6,19,.28)}
+.btn.red{background:var(--red);color:#fff;box-shadow:0 8px 20px rgba(227,6,19,.25)}
 .btn.red:hover{background:#c90511}
-.btn.dark{background:var(--ink);color:#fff}
+.btn.dark{background:var(--ink);color:var(--bg)}
 .btn.line{background:var(--surface);border:1px solid var(--line);color:var(--ink)}
 .btn.sm{padding:9px 13px;font-size:13px;border-radius:10px}
 .btn.block{width:100%;white-space:normal}
-.sec{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:38px 0 16px}
-.sec h2{font-size:22px;letter-spacing:-.03em;margin:0;font-weight:900}
-.sec .en{font-size:13px;color:var(--muted);margin-top:4px}
+.sec{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:34px 0 14px}
+.sec h2{font-size:20px;letter-spacing:-.03em;margin:0;font-weight:900}
+.sec .en{font-size:13px;color:var(--muted);margin-top:3px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.slot{display:flex;flex-direction:column;overflow:hidden}
-.slot .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
-.slot .time{font-size:22px;font-weight:900;letter-spacing:-.03em}
-.slot .label{font-size:12px;color:var(--muted);font-weight:600}
-.thumb{aspect-ratio:1/1;background:linear-gradient(135deg,#f0f0f2,#e6e6ea);display:grid;place-items:center;color:#a0a0a8;font-size:13px;overflow:hidden}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.lead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:30px 0 10px}
+.lead .eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:800;color:var(--red)}
+.lead h1{font-size:clamp(28px,4vw,40px);line-height:1.05;letter-spacing:-.04em;margin:6px 0 4px;font-weight:900}
+.lead .en{font-size:14px;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;font-size:12px;color:var(--muted)}
+.meta span{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-weight:600}
+.meta span.more{background:var(--red-soft);border-color:transparent;color:var(--red-deep);font-weight:800}
+.queue{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.qcard{overflow:hidden;display:flex;flex-direction:column}
+.qcard.next{border-color:var(--red);box-shadow:0 0 0 3px var(--red-soft),var(--shadow)}
+.qthumb{position:relative;aspect-ratio:4/5;background:var(--thumb);color:var(--muted);font-size:13px;overflow:hidden}
+.qthumb .img{position:absolute;inset:0;display:grid;place-items:center}
+.qthumb img,.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rank{position:absolute;top:12px;left:12px;background:rgba(13,13,15,.82);color:#fff;font-size:12px;font-weight:800;padding:6px 11px;border-radius:999px;letter-spacing:.02em}
+.qcard.next .rank{background:var(--red)}
+.fname{position:absolute;bottom:10px;left:12px;right:12px;font-size:11px;color:#fff;font-weight:600;text-shadow:0 1px 6px rgba(0,0,0,.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .body{padding:16px 18px;display:flex;flex-direction:column;gap:12px;flex:1}
-.caption{font-size:13.5px;line-height:1.55;color:#2a2a2e;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+.caption{font-size:13.5px;line-height:1.55;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+.caption.missing{color:var(--warn);font-weight:600}
 .empty{font-size:13px;color:var(--muted);line-height:1.6}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:#3a3a40;text-transform:capitalize}
+.chip{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);text-transform:capitalize}
 .chip.done{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.foot{margin-top:auto}
+.flowcard{padding:26px;grid-column:1/-1}
+.flowcard h3{margin:0 0 6px;font-size:18px;letter-spacing:-.02em}
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:stretch;margin-top:18px}
+.step{border:1px solid var(--line);background:var(--surface-2);border-radius:14px;padding:14px 16px}
+.step b{display:block;font-size:14px}
+.step span{display:block;font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+.step.hot{border-color:var(--red);background:var(--red-soft)}
+.arrow{display:grid;place-items:center;color:var(--muted);font-weight:900}
 .badge{font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
 .badge.ok{background:var(--ok-soft);color:var(--ok)}
 .badge.wait{background:var(--warn-soft);color:var(--warn)}
-.badge.none{background:#efeff2;color:#77777e}
+.badge.none{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .badge.red{background:var(--red-soft);color:var(--red-deep)}
-.foot{margin-top:auto}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px;align-items:start}
+.panel h2{font-size:17px;letter-spacing:-.02em;margin:0;font-weight:900}
+.panel .ph{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px 14px}
+.panel .ph .en{font-size:12px;color:var(--muted);margin-top:2px}
+.sub{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--muted);padding:14px 20px 4px;border-top:1px solid var(--line)}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;align-items:center;gap:12px;padding:12px 20px;border-top:1px solid var(--line);font-size:13.5px;flex-wrap:wrap}
+.sub + .list li:first-child{border-top:0}
+.list .name{font-weight:700;flex:1;min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .when{color:var(--muted);font-size:12px;white-space:nowrap}
+.slotrow .t{font-weight:900;font-size:15px;min-width:74px;letter-spacing:-.02em}
+.slotrow .name{font-weight:600;color:var(--ink-2)}
+.thumb{aspect-ratio:1/1;background:var(--thumb);display:grid;place-items:center;color:var(--muted);font-size:13px;overflow:hidden}
 .grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}
 .pad{padding:24px}
-label.f{display:block;font-size:12px;font-weight:800;letter-spacing:.04em;margin:0 0 7px;color:#3a3a40}
+label.f{display:block;font-size:12px;font-weight:800;letter-spacing:.04em;margin:0 0 7px;color:var(--ink-2)}
 .input{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:12px;padding:12px 14px;font-size:14px;outline:none;transition:border .15s,box-shadow .15s}
-.input:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-soft);background:#fff}
+.input:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-soft);background:var(--surface)}
 textarea.input{min-height:96px;resize:vertical;line-height:1.5}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .mt{margin-top:16px}
@@ -90,37 +132,36 @@ textarea.input{min-height:96px;resize:vertical;line-height:1.5}
 .plat.soon{opacity:.45;cursor:not-allowed}
 .hint{font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px}
 .how{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}
-.how li{display:flex;gap:12px;font-size:13.5px;line-height:1.55;color:#3a3a40}
+.how li{display:flex;gap:12px;font-size:13.5px;line-height:1.55;color:var(--ink-2)}
 .how .n{flex:none;width:28px;height:28px;border-radius:9px;background:var(--red-soft);color:var(--red-deep);display:grid;place-items:center;font-weight:900;font-size:13px}
 .drafts{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
 .draft{overflow:hidden;display:flex;flex-direction:column}
-.draft .caption{-webkit-line-clamp:8}
 .approve{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
-.list{list-style:none;margin:0;padding:0}
-.list li{display:flex;align-items:center;gap:12px;padding:13px 20px;border-top:1px solid var(--line);font-size:13.5px;flex-wrap:wrap}
-.list li:first-child{border-top:0}
-.list .name{font-weight:700;flex:1;min-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.list .when{color:var(--muted);font-size:12px;white-space:nowrap}
-.notice{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border-radius:16px;background:#fff7ec;border:1px solid #f3e1c4;color:#6d4c1c;font-size:13.5px;line-height:1.6}
-.notice b{color:#4d3510}
-dialog{border:0;border-radius:24px;padding:0;max-width:540px;width:calc(100% - 32px);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.notice{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border-radius:16px;background:var(--notice-bg);border:1px solid var(--notice-line);color:var(--notice-ink);font-size:13.5px;line-height:1.6;margin-top:22px}
+dialog{border:0;border-radius:24px;padding:0;max-width:540px;width:calc(100% - 32px);box-shadow:0 30px 80px rgba(0,0,0,.35);background:var(--surface);color:var(--ink)}
 dialog::backdrop{background:rgba(10,10,12,.6)}
 .dlg{padding:28px}
 .dlg h3{margin:0 0 6px;font-size:20px;letter-spacing:-.02em}
-.dlg ol{padding-left:18px;font-size:13.5px;line-height:1.7;color:#3a3a40}
-.dlg code{background:#f1f1f3;padding:2px 6px;border-radius:6px;font-size:12px}
+.dlg ol{padding-left:18px;font-size:13.5px;line-height:1.7;color:var(--ink-2)}
+.dlg code{background:var(--surface-2);padding:2px 6px;border-radius:6px;font-size:12px}
 .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:#111;color:#fff;padding:13px 18px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:50;max-width:calc(100% - 32px);box-shadow:0 12px 30px rgba(0,0,0,.3)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-#toast.err{background:var(--red-deep)}
+#toast.err{background:#a5000c}
 footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
-@media (max-width:900px){.slots,.grid2,.stats{grid-template-columns:1fr}}
+@media (max-width:900px){.queue,.panels,.grid2,.status{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg)}}
 @media (max-width:560px){
   .wrap{padding:0 16px}
-  .hero{padding:30px 22px 24px;border-radius:22px;margin-top:18px}
   .brand small,.conn .who{display:none}
   .row{grid-template-columns:1fr}
-  .sec{flex-direction:column;align-items:flex-start}
+  .lead,.sec{flex-direction:column;align-items:flex-start}
+  .qthumb{aspect-ratio:1/1}
+  .status{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+  .stat{padding:10px 12px;border-radius:14px}
+  .stat .ic,.stat .s{display:none}
+  .stat .k{font-size:9.5px;letter-spacing:.08em}
+  .stat .v{font-size:16px}
+  .lead{margin-top:22px}
 }
 </style>
 </head>
@@ -140,17 +181,6 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
 </header>
 
 <main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">Control Center · 3 posts / day</div>
-    <h1>3 piblikasyon pa jou.<br>Yon sèl bouton.</h1>
-    <p>Pòs yo pati otomatikman a 9 AM, 1 PM ak 6 PM (lè Los Angeles). Si otomatik la pa mache, peze <b>Pibliye kounye a</b> sou pòs la. · Posts go out automatically; if one is missed, press <b>Post now</b>.</p>
-    <div class="stats">
-      <div class="stat"><div class="k">Otomatik · Auto-posting</div><div class="v" id="stAuto">—</div><div class="s" id="stAutoS">Konekte pou wè · Connect to see</div></div>
-      <div class="stat"><div class="k">Jodi a · Today</div><div class="v" id="stToday">—</div><div class="s">pòs pibliye · posts published</div></div>
-      <div class="stat"><div class="k">Bouyon · Drafts</div><div class="v" id="stDrafts">—</div><div class="s">ap tann apwobasyon · awaiting approval</div></div>
-    </div>
-  </section>
-
   <div id="connectNotice" class="notice">
     <span style="font-size:20px">🔑</span>
     <div><b>Konekte GitHub yon sèl fwa pou bouton yo mache.</b> Kle a rete sèlman nan navigatè sa a, li pa janm ale nan kòd la. · Connect GitHub once so the buttons work. The key stays only in this browser.
@@ -158,18 +188,25 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
     </div>
   </div>
 
-  <div class="sec">
-    <div><h2>Pare pou pibliye</h2><div class="en">Ready to Publish — the next 3 posts from Google Drive</div></div>
-    <button class="btn line sm" type="button" id="driveSyncBtn">↻ Rafrechi Drive · Refresh Drive</button>
-  </div>
-  <div class="hint" id="driveHint" style="margin:-6px 0 14px">Mete imaj la nan katab <b>Ready to Publish</b> nan Google Drive, ak yon liy nan Sheet la (file, caption). · Put the image in the <b>Ready to Publish</b> Drive folder and add a row to the Sheet (file, caption).</div>
-  <div class="drafts" id="driveQueue"></div>
+  <section class="status" aria-label="Estati · Status">
+    <div class="stat"><div class="ic">⚡</div><div><div class="k">Otomatik · Auto-posting</div><div class="v" id="stAuto">—</div><div class="s" id="stAutoS">Konekte pou wè · Connect to see</div></div></div>
+    <div class="stat"><div class="ic">✓</div><div><div class="k">Jodi a · Today</div><div class="v" id="stToday">—</div><div class="s">pòs pibliye · posts published</div></div></div>
+    <div class="stat"><div class="ic">▤</div><div><div class="k">Ready to Publish</div><div class="v" id="stReady">—</div><div class="s" id="stReadyS">pòs nan Drive · posts in Drive</div></div></div>
+  </section>
+  <span id="stDrafts" hidden></span>
 
-  <div class="sec">
-    <div><h2>Pòs jodi a</h2><div class="en" id="todayLabel">Today's schedule</div></div>
-    <button class="btn line sm" type="button" id="refreshBtn">↻ Rafrechi · Refresh</button>
-  </div>
-  <div class="slots" id="slots"></div>
+  <section aria-labelledby="readyTitle">
+    <div class="lead">
+      <div>
+        <div class="eyebrow">Google Drive · Ready to Publish</div>
+        <h1 id="readyTitle">Pare pou pibliye</h1>
+        <div class="en">Pwochen 3 pòs yo. Chwazi youn epi peze Pibliye. · The next 3 posts — pick one and publish it.</div>
+      </div>
+      <button class="btn line sm" type="button" id="driveSyncBtn">↻ Rafrechi Drive · Refresh Drive</button>
+    </div>
+    <div class="meta" id="driveHint"></div>
+    <div class="queue" id="driveQueue"></div>
+  </section>
 
   <div class="sec" hidden>
     <div><h2>Kreye yon pòs ak AI</h2><div class="en">OpenAI writes the caption (Creole + English) and makes the image</div></div>
@@ -213,14 +250,25 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   <div class="sec" hidden><div><h2>Bouyon pou apwouve</h2><div class="en">Drafts waiting for your approval</div></div></div>
   <div class="drafts" id="drafts" hidden></div>
 
-  <div class="sec"><div><h2>Pwochen pòs yo</h2><div class="en">Approved and scheduled</div></div></div>
-  <div class="card"><ul class="list" id="upcoming"></ul></div>
 
-  <div class="sec">
-    <div><h2>Dènye aktivite</h2><div class="en">Recent automation runs</div></div>
-    <a class="btn line sm" target="_blank" rel="noopener" href="https://github.com/maketayisyen-cmyk/marketing/actions">Wè tout sou GitHub ↗</a>
+  <div class="panels">
+    <section class="card panel">
+      <div class="ph">
+        <div><h2>Pòs jodi a</h2><div class="en" id="todayLabel">Today's schedule</div></div>
+        <button class="btn line sm" type="button" id="refreshBtn">↻ Rafrechi</button>
+      </div>
+      <ul class="list" id="slots"></ul>
+      <div class="sub">Pwochen pòs yo · Scheduled</div>
+      <ul class="list" id="upcoming"></ul>
+    </section>
+    <section class="card panel">
+      <div class="ph">
+        <div><h2>Dènye aktivite</h2><div class="en">Recent automation runs</div></div>
+        <a class="btn line sm" target="_blank" rel="noopener" href="https://github.com/maketayisyen-cmyk/marketing/actions">GitHub ↗</a>
+      </div>
+      <ul class="list" id="runs"></ul>
+    </section>
   </div>
-  <div class="card"><ul class="list" id="runs"></ul></div>
 
   <footer>Makèt Ayisyen · Wouj #E30613, nwa #111111, blan. Monogram MA a se yon placeholder, pa logo ofisyèl la. Paj sa a pa gen okenn kle ladan l; kle GitHub ou a rete sèlman nan navigatè ou. · This page contains no keys; your GitHub key is stored only in your browser.</footer>
 </main>
@@ -345,24 +393,41 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   }
   function renderAll() { renderSlots(); renderDrafts(); renderUpcoming(); renderDrive(); }
   function renderDrive() {
-    const box = $("#driveQueue"); box.textContent = "";
+    const box = $("#driveQueue"), hint = $("#driveHint"); box.textContent = ""; hint.textContent = "";
     const sent = sentDrive(), ready = driveItems.filter(item => !sent[item.id]);
-    const more = ready.length > DRIVE_SHOWN ? " · " + (ready.length - DRIVE_SHOWN) + " lòt ap tann apre yo · " + (ready.length - DRIVE_SHOWN) + " more waiting" : "";
-    if (driveSynced) $("#driveHint").textContent = "Dènye mizajou · Last refreshed: " + ago(driveSynced) + more + " · Imaj nan katab Ready to Publish + yon liy nan Sheet la (file, caption). · Image in Ready to Publish + a row in the Sheet (file, caption).";
-    if (!ready.length) { box.appendChild(el("div", "card pad empty", token ? "Pa gen anyen nan Ready to Publish. Mete yon imaj ladan l, epi peze Rafrechi Drive. · Nothing in Ready to Publish — add an image, then press Refresh Drive." : "Konekte GitHub pou wè pòs yo. · Connect GitHub to see posts.")); return; }
-    ready.slice(0, DRIVE_SHOWN).forEach(item => {
+    $("#stReady").textContent = token ? String(ready.length) : "—";
+    $("#stReadyS").textContent = token && ready.length > DRIVE_SHOWN ? (ready.length - DRIVE_SHOWN) + " ap tann apre 3 yo · waiting after these 3" : "pòs nan Drive · posts in Drive";
+    if (driveSynced) hint.appendChild(el("span", null, "Dènye mizajou · Updated " + ago(driveSynced)));
+    if (ready.length > DRIVE_SHOWN) hint.appendChild(el("span", "more", "+" + (ready.length - DRIVE_SHOWN) + " lòt ap tann · more waiting"));
+    if (!ready.length) { box.appendChild(flowCard()); return; }
+    ready.slice(0, DRIVE_SHOWN).forEach((item, i) => {
       const p = {id: "drive-" + item.id, platforms: item.platforms || []};
-      const card = el("article", "card draft");
-      const thumb = el("div", "thumb", "…");
+      const card = el("article", "card qcard" + (i === 0 ? " next" : ""));
+      const thumb = el("div", "qthumb"), img = el("div", "img", "…");
+      thumb.append(img, el("span", "rank", i === 0 ? "1 · Pwochen · Next" : String(i + 1)), el("span", "fname", item.name));
       const body = el("div", "body");
-      body.append(el("div", "caption", item.caption || "⚠ Pa gen tèks pou " + item.name + " nan Sheet la. · No caption in the Sheet."), chips(p));
-      const btn = el("button", "btn red block mt", "▶ Pibliye kounye a · Publish now"); btn.type = "button";
+      body.append(el("div", "caption" + (item.caption ? "" : " missing"), item.caption || "⚠ Pa gen tèks pou " + item.name + " nan Sheet la. · No caption in the Sheet."), chips(p));
+      const btn = el("button", "btn red block foot", "▶ Pibliye kounye a · Publish now"); btn.type = "button";
       btn.disabled = !item.caption;
       btn.onclick = () => publishDrive(item, btn);
       body.appendChild(btn);
       card.append(thumb, body); box.appendChild(card);
-      imageFor(item.thumb, thumb);
+      imageFor(item.thumb, img);
     });
+  }
+  function flowCard() {
+    const card = el("div", "card flowcard");
+    card.append(el("h3", null, token ? "Pa gen anyen nan Ready to Publish · Nothing ready yet" : "Konekte GitHub pou wè pòs yo · Connect GitHub to see posts"),
+      el("div", "empty", "Men kijan pòs yo deplase nan Google Drive (MAKET AYISYEN MARKETING). · How posts move through Google Drive."));
+    const flow = el("div", "flow");
+    [["Pending Approval", "Travay sou pòs la la a. · Work in progress.", ""],
+     ["Ready to Publish", "Mete imaj fini an la, ak yon liy nan Sheet la. Li parèt isit la. · Final image + Sheet row; it shows here.", " hot"],
+     ["Published", "Imaj la ale la poukont li apre ou pibliye. · Moves here automatically after posting.", ""]].forEach(([t, d, c], i) => {
+      if (i) flow.appendChild(el("div", "arrow", "→"));
+      const st = el("div", "step" + c); st.append(el("b", null, t), el("span", null, d)); flow.appendChild(st);
+    });
+    card.appendChild(flow);
+    return card;
   }
   async function publishDrive(item, btn) {
     if (!token) return openConnect();
@@ -408,7 +473,7 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   }
   function renderSlots() {
     const today = laDate(new Date());
-    $("#todayLabel").textContent = "Today · " + new Date().toLocaleDateString("en-US", {timeZone: TZ, weekday: "long", month: "long", day: "numeric"}) + " (Los Angeles)";
+    $("#todayLabel").textContent = new Date().toLocaleDateString("en-US", {timeZone: TZ, weekday: "long", month: "long", day: "numeric"}) + " · Los Angeles";
     const box = $("#slots"); box.textContent = "";
     let count = 0;
     SLOTS.forEach(slot => {
@@ -416,25 +481,16 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
       const posted = post && isPosted(post);
       const late = post && !posted && new Date(post.publish_at) <= new Date();
       if (posted) count++;
-      const card = el("article", "card slot");
-      const top = el("div", "top"), left = el("div");
-      left.append(el("div", "time", slot.time), el("div", "label", slot.label));
-      top.append(left, el("span", "badge " + (!post ? "none" : posted ? "ok" : late ? "red" : "wait"), !post ? "Vid · Empty" : posted ? "✓ Pibliye · Posted" : late ? "An reta · Late" : "Pwograme · Scheduled"));
-      const thumb = el("div", "thumb", post ? "…" : "Pa gen pòs · No post");
-      const body = el("div", "body");
-      if (post) {
-        body.append(el("div", "caption", post.caption), chips(post));
-        const btn = el("button", "btn " + (posted ? "line" : "red") + " block", posted ? "✓ Deja pibliye · Already posted" : "▶ Pibliye kounye a · Post now");
-        btn.type = "button"; btn.disabled = posted;
-        btn.onclick = () => postNow(post, btn);
-        const foot = el("div", "foot"); foot.appendChild(btn); body.appendChild(foot);
-        imageFor(post.image, thumb);
-      } else {
-        body.appendChild(el("div", "empty", "Pa gen pòs apwouve pou lè sa a. Apwouve yon bouyon anba a. · No approved post for this slot — approve a draft below."));
+      const li = el("li", "slotrow");
+      li.append(el("span", "t", slot.time), el("span", "name", post ? post.caption.split("\n")[0] : slot.label),
+        el("span", "badge " + (!post ? "none" : posted ? "ok" : late ? "red" : "wait"), !post ? "Vid · Empty" : posted ? "✓ Pibliye" : late ? "An reta · Late" : "Pwograme"));
+      if (post && !posted) {
+        const btn = el("button", "btn red sm", "▶ Kounye a · Now"); btn.type = "button";
+        btn.onclick = () => postNow(post, btn); li.appendChild(btn);
       }
-      card.append(top, thumb, body); box.appendChild(card);
+      box.appendChild(li);
     });
-    $("#stToday").textContent = token ? `${count} / 3` : "—";
+    $("#stToday").textContent = token ? count + " / 3" : "—";
   }
   function renderDrafts() {
     const box = $("#drafts"); box.textContent = "";
@@ -461,7 +517,7 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   function renderUpcoming() {
     const box = $("#upcoming"); box.textContent = "";
     const list = posts.filter(p => p.approved === true && p.publish_at && !isPosted(p)).sort((a, b) => new Date(a.publish_at) - new Date(b.publish_at));
-    if (!list.length) { const li = el("li"); li.appendChild(el("span", "empty", "Pa gen pòs pwograme. · Nothing scheduled.")); box.appendChild(li); return; }
+    if (!list.length) { const li = el("li"); li.appendChild(el("span", "empty", "Pa gen lòt pòs pwograme. · Nothing else scheduled.")); box.appendChild(li); return; }
     list.forEach(p => {
       const li = el("li");
       const b = el("button", "btn line sm", "▶ Kounye a · Now"); b.type = "button"; b.onclick = () => postNow(p, b);
