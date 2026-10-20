@@ -87,6 +87,9 @@ header{background:#0d0d0f;color:#fff;position:sticky;top:0;z-index:20;border-bot
 .body{padding:16px 18px;display:flex;flex-direction:column;gap:12px;flex:1}
 .caption{font-size:13.5px;line-height:1.55;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
 .caption.missing{color:var(--warn);font-weight:600}
+.capbox{display:flex;flex-direction:column;gap:6px}
+.capbox label{font-size:12px;font-weight:700;color:var(--warn)}
+.capbox textarea{min-height:110px;font-size:13.5px}
 .empty{font-size:13px;color:var(--muted);line-height:1.6}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);text-transform:capitalize}
@@ -317,6 +320,14 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   let posts = [], published = {}, autoOn = null, driveItems = [], driveSynced = "";
   // Drive posts just sent to publish: hidden right away while GitHub moves them to "Published".
   const DRIVE_SHOWN = 3, SENT_KEY = "maket-drive-sent", SENT_MINUTES = 15;
+  // Captions typed on the page for images that have no row in the Sheet, kept while you type.
+  const CAP_KEY = "maket-drive-captions";
+  let capDrafts = {};
+  try { capDrafts = JSON.parse(localStorage.getItem(CAP_KEY) || "{}"); } catch (_) {}
+  function saveCap(id, text) {
+    if (text.trim()) capDrafts[id] = text; else delete capDrafts[id];
+    try { localStorage.setItem(CAP_KEY, JSON.stringify(capDrafts)); } catch (_) {}
+  }
   function sentDrive() {
     try {
       const sent = JSON.parse(localStorage.getItem(SENT_KEY) || "{}"), now = Date.now();
@@ -407,10 +418,20 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
       const thumb = el("div", "qthumb"), img = el("div", "img", "…");
       thumb.append(img, el("span", "rank", i === 0 ? "1 · Pwochen · Next" : String(i + 1)), el("span", "fname", item.name));
       const body = el("div", "body");
-      body.append(el("div", "caption" + (item.caption ? "" : " missing"), item.caption || "⚠ Pa gen tèks pou " + item.name + " nan Sheet la. · No caption in the Sheet."), chips(p));
       const btn = el("button", "btn red block foot", "▶ Pibliye kounye a · Publish now"); btn.type = "button";
-      btn.disabled = !item.caption;
-      btn.onclick = () => publishDrive(item, btn);
+      if (item.caption) {
+        body.append(el("div", "caption", item.caption), chips(p));
+        btn.onclick = () => publishDrive(item, btn, "");
+      } else {
+        const box = el("div", "capbox"), id = "cap-" + item.id;
+        const label = el("label", null, "⚠ Pa gen tèks nan Sheet la. Ekri l la a: · No caption in the Sheet — write it here:"); label.htmlFor = id;
+        const area = el("textarea", "input"); area.id = id; area.value = capDrafts[item.id] || "";
+        area.placeholder = "Ekri tèks pòs la… · Write the post text…";
+        area.oninput = () => { saveCap(item.id, area.value); btn.disabled = !area.value.trim(); };
+        box.append(label, area); body.append(box, chips(p));
+        btn.disabled = !area.value.trim();
+        btn.onclick = () => publishDrive(item, btn, area.value.trim());
+      }
       body.appendChild(btn);
       card.append(thumb, body); box.appendChild(card);
       imageFor(item.thumb, img);
@@ -430,13 +451,15 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
     card.appendChild(flow);
     return card;
   }
-  async function publishDrive(item, btn) {
+  async function publishDrive(item, btn, caption) {
     if (!token) return openConnect();
     if (!confirm("Pibliye " + item.name + " sou " + (item.platforms || []).join(", ") + " kounye a? · Publish now?")) return;
     btn.disabled = true; btn.textContent = "Ap pibliye… · Publishing…";
     try {
-      await dispatch("publish.yml", {dry_run: autoOn === false ? "true" : "false", drive_file_id: item.id});
-      if (autoOn !== false) { markSent(item.id); renderDrive(); }
+      const inputs = {dry_run: autoOn === false ? "true" : "false", drive_file_id: item.id};
+      if (caption) inputs.caption = caption;
+      await dispatch("publish.yml", inputs);
+      if (autoOn !== false) { markSent(item.id); saveCap(item.id, ""); renderDrive(); }
       toast(autoOn === false ? "Piblikasyon fèmen: se yon tès sèlman. · Publishing is off: preview only." : "Li pral parèt nan 1–2 minit! · Live in 1–2 minutes.");
       setTimeout(loadRuns, 4000); setTimeout(load, 120000);
     } catch (e) { toast("Pa mache · Failed: " + e.message, true); btn.disabled = false; btn.textContent = "▶ Pibliye kounye a · Publish now"; }
@@ -617,7 +640,8 @@ footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
   $("#cDate").value = laDate(new Date());
   window.MA = {setData(p, s) { posts = p; published = s; renderAll(); }, setAuto, renderRuns};
   load();
-  setInterval(() => { if (token && document.visibilityState === "visible") load(); }, 120000);
+  // Skip the auto-refresh while a caption is being typed, so the text box keeps focus.
+  setInterval(() => { if (token && document.visibilityState === "visible" && !document.activeElement.closest(".capbox")) load(); }, 120000);
 })();
 </script>
 </body>
