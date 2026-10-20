@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="ht">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d0d0f">
+<meta name="description" content="Makèt Ayisyen — panèl maketing ak piblikasyon sou rezo sosyal">
+<title>Makèt Ayisyen Control Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#e30613;--red-deep:#a5000c;--red-soft:rgba(227,6,19,.12);
+  --bg:#f4f4f6;--surface:#fff;--surface-2:#fafafb;--ink:#121214;--muted:#6b6d73;--line:#e7e7ea;
+  --ok:#0f9d58;--ok-soft:rgba(15,157,88,.12);--warn:#b7791f;--warn-soft:rgba(183,121,31,.13);
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06);--radius:20px;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+header{background:#0d0d0f;color:#fff;position:sticky;top:0;z-index:20;border-bottom:3px solid var(--red)}
+.head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:16px;padding-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:42px;height:42px;border-radius:50%;background:#fff;color:var(--red);display:grid;place-items:center;font-weight:900;font-size:19px;letter-spacing:-.04em}
+.brand b{display:block;font-size:15px;letter-spacing:.06em;font-weight:900;line-height:1.1}
+.brand small{display:block;font-size:10.5px;letter-spacing:.2em;color:#a9a9b0;font-weight:700;margin-top:3px}
+.conn{display:flex;align-items:center;gap:10px}
+.dot{width:8px;height:8px;border-radius:50%;background:#777;display:inline-block;flex:none}
+.dot.on{background:#2ecc71;box-shadow:0 0 0 4px rgba(46,204,113,.18)}
+.ghost{white-space:nowrap;background:transparent;border:1px solid #3a3a40;color:#fff;border-radius:999px;padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer}
+.ghost:hover{border-color:#777}
+.hero{margin:28px 0 22px;border-radius:28px;padding:44px 44px 36px;color:#fff;position:relative;overflow:hidden;
+  background:radial-gradient(900px 400px at 100% 0%,rgba(227,6,19,.55),transparent 60%),linear-gradient(135deg,#141416,#1f1f23 60%,#2a0b0e)}
+.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:linear-gradient(180deg,#000,transparent);mask-image:linear-gradient(180deg,#000,transparent);pointer-events:none}
+.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:800;color:#ff8a92;position:relative}
+.hero h1{font-size:clamp(30px,4.6vw,54px);line-height:1.04;letter-spacing:-.045em;margin:12px 0 10px;max-width:760px;font-weight:900;position:relative}
+.hero p{color:#d6d6db;max-width:640px;line-height:1.65;font-size:15px;margin:0;position:relative}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px;position:relative}
+.stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:18px 20px}
+.stat .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b9b9c0;font-weight:700}
+.stat .v{font-size:28px;font-weight:900;letter-spacing:-.03em;margin-top:6px;display:flex;align-items:center;gap:10px}
+.stat .s{font-size:12px;color:#a9a9b0;margin-top:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;transition:transform .12s,background .15s,opacity .15s;white-space:nowrap}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn.red{background:var(--red);color:#fff;box-shadow:0 8px 20px rgba(227,6,19,.28)}
+.btn.red:hover{background:#c90511}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.line{background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.btn.sm{padding:9px 13px;font-size:13px;border-radius:10px}
+.btn.block{width:100%;white-space:normal}
+.sec{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:38px 0 16px}
+.sec h2{font-size:22px;letter-spacing:-.03em;margin:0;font-weight:900}
+.sec .en{font-size:13px;color:var(--muted);margin-top:4px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.slot{display:flex;flex-direction:column;overflow:hidden}
+.slot .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.slot .time{font-size:22px;font-weight:900;letter-spacing:-.03em}
+.slot .label{font-size:12px;color:var(--muted);font-weight:600}
+.thumb{aspect-ratio:1/1;background:linear-gradient(135deg,#f0f0f2,#e6e6ea);display:grid;place-items:center;color:#a0a0a8;font-size:13px;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.body{padding:16px 18px;display:flex;flex-direction:column;gap:12px;flex:1}
+.caption{font-size:13.5px;line-height:1.55;color:#2a2a2e;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+.empty{font-size:13px;color:var(--muted);line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:11px;font-weight:700;padding:5px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:#3a3a40;text-transform:capitalize}
+.chip.done{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.badge{font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.wait{background:var(--warn-soft);color:var(--warn)}
+.badge.none{background:#efeff2;color:#77777e}
+.badge.red{background:var(--red-soft);color:var(--red-deep)}
+.foot{margin-top:auto}
+.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}
+.pad{padding:24px}
+label.f{display:block;font-size:12px;font-weight:800;letter-spacing:.04em;margin:0 0 7px;color:#3a3a40}
+.input{width:100%;border:1px solid var(--line);background:var(--surface-2);border-radius:12px;padding:12px 14px;font-size:14px;outline:none;transition:border .15s,box-shadow .15s}
+.input:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-soft);background:#fff}
+textarea.input{min-height:96px;resize:vertical;line-height:1.5}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mt{margin-top:16px}
+.plats{display:flex;flex-wrap:wrap;gap:8px}
+.plat{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;background:var(--surface-2);user-select:none;text-transform:capitalize}
+.plat input{accent-color:var(--red)}
+.plat.soon{opacity:.45;cursor:not-allowed}
+.hint{font-size:12px;color:var(--muted);line-height:1.6;margin-top:8px}
+.how{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px}
+.how li{display:flex;gap:12px;font-size:13.5px;line-height:1.55;color:#3a3a40}
+.how .n{flex:none;width:28px;height:28px;border-radius:9px;background:var(--red-soft);color:var(--red-deep);display:grid;place-items:center;font-weight:900;font-size:13px}
+.drafts{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+.draft{overflow:hidden;display:flex;flex-direction:column}
+.draft .caption{-webkit-line-clamp:8}
+.approve{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;align-items:center;gap:12px;padding:13px 20px;border-top:1px solid var(--line);font-size:13.5px;flex-wrap:wrap}
+.list li:first-child{border-top:0}
+.list .name{font-weight:700;flex:1;min-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .when{color:var(--muted);font-size:12px;white-space:nowrap}
+.notice{display:flex;gap:14px;align-items:flex-start;padding:18px 20px;border-radius:16px;background:#fff7ec;border:1px solid #f3e1c4;color:#6d4c1c;font-size:13.5px;line-height:1.6}
+.notice b{color:#4d3510}
+dialog{border:0;border-radius:24px;padding:0;max-width:540px;width:calc(100% - 32px);box-shadow:0 30px 80px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,10,12,.6)}
+.dlg{padding:28px}
+.dlg h3{margin:0 0 6px;font-size:20px;letter-spacing:-.02em}
+.dlg ol{padding-left:18px;font-size:13.5px;line-height:1.7;color:#3a3a40}
+.dlg code{background:#f1f1f3;padding:2px 6px;border-radius:6px;font-size:12px}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:#111;color:#fff;padding:13px 18px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:50;max-width:calc(100% - 32px);box-shadow:0 12px 30px rgba(0,0,0,.3)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{background:var(--red-deep)}
+footer{color:var(--muted);font-size:12px;line-height:1.7;padding:40px 0 60px}
+@media (max-width:900px){.slots,.grid2,.stats{grid-template-columns:1fr}}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .hero{padding:30px 22px 24px;border-radius:22px;margin-top:18px}
+  .brand small,.conn .who{display:none}
+  .row{grid-template-columns:1fr}
+  .sec{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap head">
+    <a class="brand" href="https://maketayisyen.com" target="_blank" rel="noopener">
+      <span class="mark" aria-label="Makèt Ayisyen">MA</span>
+      <span><b>MAKÈT AYISYEN</b><small>MARKETING CONTROL CENTER</small></span>
+    </a>
+    <div class="conn">
+      <span class="dot" id="connDot"></span>
+      <span class="who" id="connText" style="font-size:13px;color:#cfcfd4">Pa konekte</span>
+      <button class="ghost" id="connBtn" type="button">Konekte GitHub</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Control Center · 3 posts / day</div>
+    <h1>3 piblikasyon pa jou.<br>Yon sèl bouton.</h1>
+    <p>Pòs yo pati otomatikman a 9 AM, 1 PM ak 6 PM (lè Los Angeles). Si otomatik la pa mache, peze <b>Pibliye kounye a</b> sou pòs la. · Posts go out automatically; if one is missed, press <b>Post now</b>.</p>
+    <div class="stats">
+      <div class="stat"><div class="k">Otomatik · Auto-posting</div><div class="v" id="stAuto">—</div><div class="s" id="stAutoS">Konekte pou wè · Connect to see</div></div>
+      <div class="stat"><div class="k">Jodi a · Today</div><div class="v" id="stToday">—</div><div class="s">pòs pibliye · posts published</div></div>
+      <div class="stat"><div class="k">Bouyon · Drafts</div><div class="v" id="stDrafts">—</div><div class="s">ap tann apwobasyon · awaiting approval</div></div>
+    </div>
+  </section>
+
+  <div id="connectNotice" class="notice">
+    <span style="font-size:20px">🔑</span>
+    <div><b>Konekte GitHub yon sèl fwa pou bouton yo mache.</b> Kle a rete sèlman nan navigatè sa a, li pa janm ale nan kòd la. · Connect GitHub once so the buttons work. The key stays only in this browser.
+      <div style="margin-top:10px"><button class="btn red sm" type="button" data-open-connect>Konekte kounye a · Connect</button></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div><h2>Pòs jodi a</h2><div class="en" id="todayLabel">Today's schedule</div></div>
+    <button class="btn line sm" type="button" id="refreshBtn">↻ Rafrechi · Refresh</button>
+  </div>
+  <div class="slots" id="slots"></div>
+
+  <div class="sec">
+    <div><h2>Kreye yon pòs ak AI</h2><div class="en">OpenAI writes the caption (Creole + English) and makes the image</div></div>
+  </div>
+  <div class="grid2">
+    <form class="card pad" id="createForm">
+      <label class="f" for="topic">Sou kisa pòs la ye? · What is the post about?</label>
+      <textarea class="input" id="topic" required placeholder="Egz: Nouvo kafe ayisyen, 20% rabè wikenn sa a…"></textarea>
+      <div class="mt">
+        <label class="f" for="imgPrompt">Imaj · Image description <span style="font-weight:500;color:var(--muted)">(opsyonèl · optional)</span></label>
+        <input class="input" id="imgPrompt" placeholder="Egz: High-end ad photo, woman holding Haitian coffee, studio light, no text">
+      </div>
+      <div class="mt">
+        <label class="f">Rezo sosyal · Platforms</label>
+        <div class="plats" id="platPick"></div>
+        <div class="hint">Instagram bezwen yon lyen imaj piblik (image_url) anvan li pibliye; san li, Threads poste tèks sèlman. · Instagram needs a public image link; without it, Threads posts text only.</div>
+      </div>
+      <div class="row mt">
+        <div><label class="f" for="cDate">Dat · Date</label><input class="input" type="date" id="cDate"></div>
+        <div><label class="f" for="cSlot">Lè · Time slot</label><select class="input" id="cSlot"><option value="">Pita · Set later</option></select></div>
+      </div>
+      <button class="btn red block mt" type="submit" id="createBtn">✦ Kreye pòs la · Generate post</button>
+      <div class="hint">Bouyon an ap parèt anba a nan 1–2 minit. Anyen pa pibliye san ou pa apwouve l. · The draft appears below in 1–2 minutes. Nothing posts until you approve it.</div>
+    </form>
+    <div class="card pad">
+      <h3 style="margin:0 0 16px;font-size:16px">Kijan sa mache · How it works</h3>
+      <ol class="how">
+        <li><span class="n">1</span><span><b>Kreye · Create</b> — AI ekri tèks la an kreyòl ak anglè epi fè imaj la.</span></li>
+        <li><span class="n">2</span><span><b>Apwouve · Approve</b> — chwazi dat ak lè (9 AM, 1 PM, 6 PM) epi peze Apwouve.</span></li>
+        <li><span class="n">3</span><span><b>Otomatik · Auto</b> — GitHub pibliye l nan lè a sou tout rezo ou chwazi yo.</span></li>
+        <li><span class="n">4</span><span><b>Si li pa pati · If missed</b> — peze <b>Pibliye kounye a</b> sou kat pòs la.</span></li>
+      </ol>
+      <div class="hint mt">Nouvo rezo (Facebook, Threads, TikTok, LinkedIn, X, YouTube) ap ajoute lè kont yo konekte. · More networks get added as accounts are connected.</div>
+    </div>
+  </div>
+
+  <div class="sec"><div><h2>Bouyon pou apwouve</h2><div class="en">Drafts waiting for your approval</div></div></div>
+  <div class="drafts" id="drafts"></div>
+
+  <div class="sec"><div><h2>Pwochen pòs yo</h2><div class="en">Approved and scheduled</div></div></div>
+  <div class="card"><ul class="list" id="upcoming"></ul></div>
+
+  <div class="sec">
+    <div><h2>Dènye aktivite</h2><div class="en">Recent automation runs</div></div>
+    <a class="btn line sm" target="_blank" rel="noopener" href="https://github.com/maketayisyen-cmyk/marketing/actions">Wè tout sou GitHub ↗</a>
+  </div>
+  <div class="card"><ul class="list" id="runs"></ul></div>
+
+  <footer>Makèt Ayisyen · Wouj #E30613, nwa #111111, blan. Monogram MA a se yon placeholder, pa logo ofisyèl la. Paj sa a pa gen okenn kle ladan l; kle GitHub ou a rete sèlman nan navigatè ou. · This page contains no keys; your GitHub key is stored only in your browser.</footer>
+</main>
+
+<dialog id="connectDlg">
+  <form method="dialog" class="dlg">
+    <h3>Konekte GitHub · Connect GitHub</h3>
+    <ol>
+      <li>Ouvri <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--red);font-weight:700">GitHub → Fine-grained token ↗</a> (kòm <b>maketayisyen-cmyk</b>).</li>
+      <li>Repository access: <b>Only select repositories</b> → <code>marketing</code>.</li>
+      <li>Permissions: <b>Actions</b> Read and write · <b>Contents</b> Read and write · <b>Variables</b> Read-only.</li>
+      <li>Kopye token an epi kole l la a. · Copy the token and paste it here.</li>
+    </ol>
+    <label class="f" for="tokenInput">Token</label>
+    <input class="input" id="tokenInput" type="password" autocomplete="off" placeholder="github_pat_…">
+    <div class="hint">Li rete sèlman nan navigatè sa a. Pa itilize l sou yon òdinatè piblik. · Stored only in this browser.</div>
+    <div class="actions">
+      <button class="btn line sm" value="cancel" formnovalidate>Anile</button>
+      <button class="btn line sm" type="button" id="disconnectBtn">Dekonekte</button>
+      <button class="btn red sm" value="save">Konekte</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+(() => {
+  const OWNER = "maketayisyen-cmyk", REPO = "marketing", BRANCH = "main";
+  const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
+  const TZ = "America/Los_Angeles";
+  const SLOTS = [
+    {hour: 9, time: "9:00 AM", label: "Bonjou kominote a · Brand"},
+    {hour: 13, time: "1:00 PM", label: "Pwodwi ak vandè · Products"},
+    {hour: 18, time: "6:00 PM", label: "Angajman · Call to action"},
+  ];
+  const PLATFORMS = ["bluesky", "mastodon", "instagram", "facebook", "threads"];
+  const SOON = ["tiktok", "linkedin", "x", "youtube"];
+  const KEY = "ma-gh-token";
+
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  let token = "";
+  try { token = localStorage.getItem(KEY) || ""; } catch (_) {}
+  let posts = [], published = {}, autoOn = null;
+  const imageCache = {};
+
+  function toast(msg, err) {
+    const t = $("#toast"); t.textContent = msg; t.className = "show" + (err ? " err" : "");
+    clearTimeout(toast.t); toast.t = setTimeout(() => t.className = "", 4500);
+  }
+  async function gh(path, opts = {}) {
+    const res = await fetch(API + path, {
+      ...opts,
+      headers: {"Accept": "application/vnd.github+json", "Authorization": "Bearer " + token, "X-GitHub-Api-Version": "2022-11-28", ...(opts.headers || {})},
+    });
+    if (!res.ok) { const e = new Error(res.status + " " + (await res.text()).slice(0, 140)); e.status = res.status; throw e; }
+    return res;
+  }
+  const b64decode = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, "")), c => c.charCodeAt(0)));
+  const b64encode = (str) => { let bin = ""; new TextEncoder().encode(str).forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+  const laDate = (d) => new Intl.DateTimeFormat("en-CA", {timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit"}).format(d);
+  const laHour = (d) => Number(new Intl.DateTimeFormat("en-US", {timeZone: TZ, hour: "numeric", hourCycle: "h23"}).format(d));
+  function laIso(dateStr, hour) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const guess = new Date(Date.UTC(y, m - 1, d, hour + 8));
+    const name = new Intl.DateTimeFormat("en-US", {timeZone: TZ, timeZoneName: "longOffset"}).formatToParts(guess).find(p => p.type === "timeZoneName").value;
+    return `${dateStr}T${String(hour).padStart(2, "0")}:00:00${name.replace("GMT", "") || "+00:00"}`;
+  }
+  const fmtWhen = (iso) => new Date(iso).toLocaleString("en-US", {timeZone: TZ, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit"});
+  const ago = (iso) => { const s = (Date.now() - new Date(iso)) / 1000; if (s < 60) return "kounye a"; if (s < 3600) return Math.round(s / 60) + " min"; if (s < 86400) return Math.round(s / 3600) + " h"; return Math.round(s / 86400) + " j"; };
+  const done = (p, pl) => Boolean(published[p.id + ":" + pl]);
+  const isPosted = (p) => (p.platforms || []).length > 0 && p.platforms.every(pl => done(p, pl));
+
+  async function imageFor(path, box) {
+    if (!path || !token) return;
+    try {
+      if (!imageCache[path]) {
+        const res = await gh("/contents/" + path.split("/").map(encodeURIComponent).join("/") + "?ref=" + BRANCH, {headers: {"Accept": "application/vnd.github.raw+json"}});
+        imageCache[path] = URL.createObjectURL(await res.blob());
+      }
+      box.textContent = ""; const img = el("img"); img.alt = "Imaj pòs la"; img.src = imageCache[path]; box.appendChild(img);
+    } catch (_) { box.textContent = "Imaj pa disponib"; }
+  }
+  function chips(p) {
+    const wrap = el("div", "chips");
+    (p.platforms || []).forEach(pl => wrap.appendChild(el("span", "chip" + (done(p, pl) ? " done" : ""), (done(p, pl) ? "✓ " : "") + pl)));
+    return wrap;
+  }
+
+  async function readJson(path) {
+    const data = await (await gh("/contents/" + path + "?ref=" + BRANCH)).json();
+    return {json: JSON.parse(b64decode(data.content)), sha: data.sha};
+  }
+  async function load() {
+    renderConn();
+    if (token) {
+      try {
+        const [p, s] = await Promise.all([readJson("content/posts.json"), readJson("content/published-state.json").catch(() => ({json: {published: {}}}))]);
+        posts = p.json.posts || []; published = (s.json && s.json.published) || {};
+        $("#connText").textContent = OWNER;
+      } catch (e) {
+        toast(e.status === 401 ? "Token an pa bon. Konekte ankò. · Token invalid, reconnect." : "Pa ka li pòs yo · Could not load posts: " + e.message, true);
+      }
+    }
+    renderAll();
+    if (token) { loadRuns(); loadAuto(); } else renderRuns([]);
+  }
+  function renderAll() { renderSlots(); renderDrafts(); renderUpcoming(); }
+  async function loadRuns() {
+    try { renderRuns((await (await gh("/actions/runs?per_page=8")).json()).workflow_runs || []); } catch (_) { renderRuns([]); }
+  }
+  async function loadAuto() {
+    try { setAuto(String((await (await gh("/actions/variables/ENABLE_PUBLISHING")).json()).value).toLowerCase() === "true"); }
+    catch (e) { setAuto(e.status === 404 ? false : null); }
+  }
+  function setAuto(on) {
+    autoOn = on;
+    const v = $("#stAuto"), s = $("#stAutoS");
+    if (on === null) { v.textContent = "?"; s.textContent = "Token an bezwen pèmisyon Variables · Needs Variables permission"; return; }
+    v.textContent = ""; v.append(el("span", "dot" + (on ? " on" : "")), document.createTextNode(on ? "Limen · ON" : "Fèmen · OFF"));
+    s.textContent = on ? "Pòs apwouve yo pati poukont yo · Approved posts go out on time" : "Mete ENABLE_PUBLISHING=true · Publishing is switched off";
+  }
+
+  function renderConn() {
+    $("#connDot").className = "dot" + (token ? " on" : "");
+    $("#connText").textContent = token ? "Konekte" : "Pa konekte";
+    $("#connBtn").textContent = token ? "Paramèt · Settings" : "Konekte GitHub";
+    $("#connectNotice").style.display = token ? "none" : "";
+  }
+  function renderSlots() {
+    const today = laDate(new Date());
+    $("#todayLabel").textContent = "Today · " + new Date().toLocaleDateString("en-US", {timeZone: TZ, weekday: "long", month: "long", day: "numeric"}) + " (Los Angeles)";
+    const box = $("#slots"); box.textContent = "";
+    let count = 0;
+    SLOTS.forEach(slot => {
+      const post = posts.find(p => p.approved === true && p.publish_at && laDate(new Date(p.publish_at)) === today && laHour(new Date(p.publish_at)) === slot.hour);
+      const posted = post && isPosted(post);
+      const late = post && !posted && new Date(post.publish_at) <= new Date();
+      if (posted) count++;
+      const card = el("article", "card slot");
+      const top = el("div", "top"), left = el("div");
+      left.append(el("div", "time", slot.time), el("div", "label", slot.label));
+      top.append(left, el("span", "badge " + (!post ? "none" : posted ? "ok" : late ? "red" : "wait"), !post ? "Vid · Empty" : posted ? "✓ Pibliye · Posted" : late ? "An reta · Late" : "Pwograme · Scheduled"));
+      const thumb = el("div", "thumb", post ? "…" : "Pa gen pòs · No post");
+      const body = el("div", "body");
+      if (post) {
+        body.append(el("div", "caption", post.caption), chips(post));
+        const btn = el("button", "btn " + (posted ? "line" : "red") + " block", posted ? "✓ Deja pibliye · Already posted" : "▶ Pibliye kounye a · Post now");
+        btn.type = "button"; btn.disabled = posted;
+        btn.onclick = () => postNow(post, btn);
+        const foot = el("div", "foot"); foot.appendChild(btn); body.appendChild(foot);
+        imageFor(post.image, thumb);
+      } else {
+        body.appendChild(el("div", "empty", "Pa gen pòs apwouve pou lè sa a. Apwouve yon bouyon anba a. · No approved post for this slot — approve a draft below."));
+      }
+      card.append(top, thumb, body); box.appendChild(card);
+    });
+    $("#stToday").textContent = token ? `${count} / 3` : "—";
+  }
+  function renderDrafts() {
+    const box = $("#drafts"); box.textContent = "";
+    const drafts = posts.filter(p => p.approved !== true);
+    $("#stDrafts").textContent = token ? String(drafts.length) : "—";
+    if (!drafts.length) { box.appendChild(el("div", "card pad empty", token ? "Pa gen bouyon. Kreye yon pòs anwo a. · No drafts — generate one above." : "Konekte GitHub pou wè bouyon yo. · Connect GitHub to see drafts.")); return; }
+    drafts.slice().reverse().forEach(p => {
+      const card = el("article", "card draft");
+      const thumb = el("div", "thumb", p.image ? "…" : "Pa gen imaj · No image");
+      const body = el("div", "body");
+      body.append(el("div", "caption", p.caption), chips(p));
+      const ap = el("div", "approve");
+      const date = el("input", "input"); date.type = "date"; date.setAttribute("aria-label", "Dat"); date.value = laDate(p.publish_at ? new Date(p.publish_at) : new Date());
+      const sel = el("select", "input"); sel.setAttribute("aria-label", "Lè");
+      SLOTS.forEach(s => { const o = el("option", null, s.time); o.value = s.hour; sel.appendChild(o); });
+      if (p.publish_at) sel.value = laHour(new Date(p.publish_at));
+      const btn = el("button", "btn dark", "✓ Apwouve · Approve"); btn.type = "button"; btn.style.gridColumn = "1 / -1";
+      btn.onclick = () => approve(p.id, date.value, Number(sel.value), btn);
+      ap.append(date, sel, btn); body.appendChild(ap);
+      card.append(thumb, body); box.appendChild(card);
+      imageFor(p.image, thumb);
+    });
+  }
+  function renderUpcoming() {
+    const box = $("#upcoming"); box.textContent = "";
+    const list = posts.filter(p => p.approved === true && p.publish_at && !isPosted(p)).sort((a, b) => new Date(a.publish_at) - new Date(b.publish_at));
+    if (!list.length) { const li = el("li"); li.appendChild(el("span", "empty", "Pa gen pòs pwograme. · Nothing scheduled.")); box.appendChild(li); return; }
+    list.forEach(p => {
+      const li = el("li");
+      const b = el("button", "btn line sm", "▶ Kounye a · Now"); b.type = "button"; b.onclick = () => postNow(p, b);
+      li.append(el("span", "badge wait", fmtWhen(p.publish_at)), el("span", "name", p.caption.split("\n")[0]), chips(p), b);
+      box.appendChild(li);
+    });
+  }
+  function renderRuns(runs) {
+    const box = $("#runs"); box.textContent = "";
+    if (!runs.length) { const li = el("li"); li.appendChild(el("span", "empty", token ? "Pa gen aktivite. · No runs yet." : "Konekte pou wè aktivite. · Connect to see activity.")); box.appendChild(li); return; }
+    runs.forEach(r => {
+      const st = r.status !== "completed" ? ["wait", "Ap mache · Running"] : r.conclusion === "success" ? ["ok", "✓ Siksè · Success"] : ["red", "✕ Echwe · Failed"];
+      const a = el("a", "name", r.name + (r.event === "schedule" ? " · otomatik" : " · manyèl")); a.href = r.html_url; a.target = "_blank"; a.rel = "noopener";
+      const li = el("li"); li.append(el("span", "badge " + st[0], st[1]), a, el("span", "when", ago(r.created_at)));
+      box.appendChild(li);
+    });
+  }
+
+  async function dispatch(workflow, inputs) {
+    await gh(`/actions/workflows/${workflow}/dispatches`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({ref: BRANCH, inputs})});
+  }
+  async function postNow(post, btn) {
+    if (!token) return openConnect();
+    const old = btn.textContent; btn.disabled = true; btn.textContent = "Ap voye… · Sending…";
+    try {
+      await dispatch("publish.yml", {dry_run: "false", post_id: post.id});
+      toast(autoOn === false
+        ? "Piblikasyon fèmen (ENABLE_PUBLISHING): se yon preview sèlman. · Publishing is OFF, this run only previews."
+        : "Piblikasyon an kòmanse! Tcheke Dènye aktivite. · Publishing started — check Recent activity.", autoOn === false);
+      setTimeout(loadRuns, 4000); setTimeout(load, 90000);
+    } catch (e) { toast("Pa mache · Failed: " + e.message, true); }
+    btn.disabled = false; btn.textContent = old;
+  }
+  async function approve(id, dateStr, hour, btn) {
+    if (!token) return openConnect();
+    if (!dateStr) return toast("Chwazi yon dat · Pick a date", true);
+    btn.disabled = true; btn.textContent = "Ap sove… · Saving…";
+    try {
+      const fresh = await readJson("content/posts.json");
+      const p = (fresh.json.posts || []).find(x => x.id === id);
+      if (!p) throw new Error("pòs la pa la ankò · post no longer exists");
+      p.approved = true; p.publish_at = laIso(dateStr, hour);
+      await gh("/contents/content/posts.json", {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({
+        message: `Approve ${id} for ${p.publish_at}`, branch: BRANCH, sha: fresh.sha,
+        content: b64encode(JSON.stringify(fresh.json, null, 2) + "\n"),
+      })});
+      toast("Apwouve pou " + fmtWhen(p.publish_at) + " · Approved");
+      await load();
+    } catch (e) { toast("Pa ka apwouve · Could not approve: " + e.message, true); btn.disabled = false; btn.textContent = "✓ Apwouve · Approve"; }
+  }
+  $("#createForm").addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    if (!token) return openConnect();
+    const plats = [...document.querySelectorAll("#platPick input:checked")].map(i => i.value);
+    if (!plats.length) return toast("Chwazi omwen yon rezo · Pick a platform", true);
+    const inputs = {topic: $("#topic").value.trim(), platforms: plats.join(","), generate_image: "true"};
+    if ($("#imgPrompt").value.trim()) inputs.image_prompt = $("#imgPrompt").value.trim();
+    if ($("#cDate").value && $("#cSlot").value) inputs.publish_at = laIso($("#cDate").value, Number($("#cSlot").value));
+    const btn = $("#createBtn"); btn.disabled = true; btn.textContent = "Ap kreye… · Generating…";
+    try {
+      await dispatch("generate.yml", inputs);
+      toast("AI ap travay! Bouyon an ap parèt nan 1–2 minit. · Draft coming in 1–2 min.");
+      $("#topic").value = ""; $("#imgPrompt").value = "";
+      setTimeout(loadRuns, 4000); setTimeout(load, 100000);
+    } catch (e) { toast("Pa mache · Failed: " + e.message, true); }
+    btn.disabled = false; btn.textContent = "✦ Kreye pòs la · Generate post";
+  });
+
+  const dlg = $("#connectDlg");
+  function openConnect() { $("#tokenInput").value = ""; dlg.showModal(); }
+  $("#connBtn").onclick = openConnect;
+  document.querySelectorAll("[data-open-connect]").forEach(b => b.onclick = openConnect);
+  $("#disconnectBtn").onclick = () => {
+    token = ""; try { localStorage.removeItem(KEY); } catch (_) {}
+    posts = []; published = {}; dlg.close(); load(); toast("Dekonekte · Disconnected");
+  };
+  dlg.addEventListener("close", () => {
+    const v = $("#tokenInput").value.trim();
+    if (dlg.returnValue === "save" && v) {
+      token = v; try { localStorage.setItem(KEY, v); } catch (_) {}
+      toast("Konekte! · Connected"); load();
+    }
+  });
+  $("#refreshBtn").onclick = () => { load(); toast("Rafrechi · Refreshed"); };
+
+  const pick = $("#platPick");
+  PLATFORMS.forEach(p => { const l = el("label", "plat"), i = el("input"); i.type = "checkbox"; i.value = p; i.checked = p !== "instagram"; l.append(i, document.createTextNode(p)); pick.appendChild(l); });
+  SOON.forEach(p => pick.appendChild(el("span", "plat soon", p + " · byento")));
+  SLOTS.forEach(s => { const o = el("option", null, s.time); o.value = s.hour; $("#cSlot").appendChild(o); });
+  $("#cDate").value = laDate(new Date());
+  window.MA = {setData(p, s) { posts = p; published = s; renderAll(); }, setAuto, renderRuns};
+  load();
+  setInterval(() => { if (token && document.visibilityState === "visible") load(); }, 120000);
+})();
+</script>
+</body>
+</html>
